@@ -101,7 +101,7 @@
                 const formData = new FormData();
                 formData.append('file', file);
 
-                axios.post('http://localhost:3000/upload', formData, {
+                axios.post('https://jazz-datahackathon-1.onrender.com/upload', formData, {
                     headers: {
                         'Content-Type': 'multipart/form-data'
                     }
@@ -122,7 +122,7 @@
         function performSearch(type) {
             const query = document.getElementById('searchInput').value;
             console.log(query); // Log the query to console
-            axios.get(`http://localhost:3000/search?type=${type}&query=${encodeURIComponent(query)}`)
+            axios.get(`https://jazz-datahackathon-1.onrender.com/search?type=${type}&query=${encodeURIComponent(query)}`)
                 .then(function (response) {
                     console.log('Search results:', response.data);
                     displayResults(response.data);
