@@ -1,0 +1,34 @@
+{
+  "name": "ai-search",
+  "version": "0.0.1",
+  "description": "a way of indexing documents stored on a database provided that the database is normalized",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "keywords": [
+    "ai",
+    "search",
+    "first",
+    "beginning",
+    "the",
+    "end"
+  ],
+  "author": "arsalan ashaar hashmi",
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "@google/generative-ai": "^0.7.1",
+    "axios": "^1.6.8",
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "math": "^0.0.3",
+    "math.js": "^1.1.46",
+    "mathjs": "^12.4.1",
+    "mongoose": "^8.3.2",
+    "multer": "^1.4.5-lts.1",
+    "nodemon": "^3.1.0",
+    "numpy": "^0.0.1"
+  }
+}

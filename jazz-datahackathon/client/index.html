@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jazz Search</title>
+    <!-- Bootstrap CSS CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="icon" href="jazz_logo.png" type="image/x-icon">
+    <!-- Custom Styles -->
+    <style>
+        .logo-header {
+            text-align: center;
+        }
+        
+        .header-logo {
+            width: 150px; 
+            height: auto;  
+            display: block; 
+            margin: 0 auto 10px;
+        }
+        
+        .logo-header h1 {
+            display: inline-block;
+            margin: 0;
+        }
+        
+        body {
+            background-color: #000;
+            color: #fff;
+            /* changed from 100vh to auto for scrollable content */
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            overflow-y: auto; /* enables vertical scrolling */
+        }
+
+        .search-bar-container {
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .btn-search,
+        .btn-upload {
+            width: 100%;
+            margin-top: 10px;
+        }
+
+        /* Hidden file input */
+        #fileInput {
+            display: none;
+        }
+
+        #results {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .card {
+            flex: 0 1 200px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="logo-header">
+        <img src="jazz_logo.png" alt="Logo" class="header-logo">
+        <img src="jazz_search.png" alt="Logo" class="header-logo">
+    </div>
+    <div class="search-bar-container">
+        <input type="text" id="searchInput" class="form-control" placeholder="Search...">
+        <!-- Updated to include two search buttons -->
+        <button class="btn btn-outline-light btn-search" id="searchPeople">Search People</button>
+        <!-- Upload Document Button -->
+        <button id="uploadBtn" class="btn btn-outline-light btn-upload">Upload Document</button>
+        <!-- Hidden file input -->
+        <input type="file" id="fileInput">
+    </div>
+
+    <div id="resultsContainer" class="mt-4" style="display: none;">
+        <h2>Your most relevant results:</h2>
+        <div id="results" class="d-flex flex-column align-items-center"></div>
+    </div>
+
+    <!-- Axios CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Custom Script -->
+    <script>
+        document.getElementById('uploadBtn').addEventListener('click', function () {
+            document.getElementById('fileInput').click();
+        });
+
+        document.getElementById('fileInput').addEventListener('change', function (event) {
+            const file = event.target.files[0];
+            if (file) {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                axios.post('http://localhost:3000/upload', formData, {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                })
+                    .then(function (response) {
+                        console.log('File uploaded successfully', response);
+                    })
+                    .catch(function (error) {
+                        console.error('Error uploading file', error);
+                    });
+            }
+        });
+
+        document.getElementById('searchPeople').addEventListener('click', function () {
+            performSearch('documents');
+        });
+
+        function performSearch(type) {
+            const query = document.getElementById('searchInput').value;
+            console.log(query); // Log the query to console
+            axios.get(`http://localhost:3000/search?type=${type}&query=${encodeURIComponent(query)}`)
+                .then(function (response) {
+                    console.log('Search results:', response.data);
+                    displayResults(response.data);
+                })
+                .catch(function (error) {
+                    console.error('Error fetching search results', error);
+                });
+        }
+
+        function displayResults(data) {
+            const resultsContainer = document.getElementById('resultsContainer');
+            const resultsDiv = document.getElementById('results');
+            resultsDiv.innerHTML = ''; // Clear previous results
+
+            // Function to truncate content to 50 words
+            function truncateContent(content) {
+                return content.split(' ').slice(0, 50).join(' ') + '...';
+            }
+
+            // Iterate through the first two results and create cards
+            data.results.slice(0, 2).forEach(result => {
+                const card = document.createElement('div');
+                card.className = 'card text-white bg-dark mb-3';
+                card.style.maxWidth = '20rem';
+                const cardHeader = document.createElement('div');
+                cardHeader.className = 'card-header';
+                cardHeader.textContent = result.filename;
+                const cardBody = document.createElement('div');
+                cardBody.className = 'card-body';
+                const cardText = document.createElement('p');
+                cardText.className = 'card-text';
+                cardText.textContent = truncateContent(result.content);
+                cardBody.appendChild(cardText);
+                card.appendChild(cardHeader);
+                card.appendChild(cardBody);
+                resultsDiv.appendChild(card);
+            });
+
+            resultsContainer.style.display = 'block';
+        }
+    </script>
+</body>
+
+</html>
